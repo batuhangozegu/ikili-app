@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:ikili_app/core/theme/app_theme.dart';
 import 'package:ikili_app/firebase_options.dart';
 
 
@@ -17,9 +18,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
       title: "İkili App",
       home: Scaffold(
-        body: Center(child: Text("Firebase bağlandı mı?"),),
+        body: Center(child: ElevatedButton(
+          onPressed: () {},
+         child: const Text("Test butonu")
+         ),
+        ),
       ),
     );
   }
