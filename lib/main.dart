@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ikili_app/core/theme/app_theme.dart';
 import 'package:ikili_app/firebase_options.dart';
+import 'package:ikili_app/presentation/screens/login/login_screen.dart';
 
 
 void main() async {
@@ -13,7 +14,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const new({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +23,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
       title: "İkili App",
-      home: Scaffold(
-        body: Center(child: ElevatedButton(
-          onPressed: () {},
-         child: const Text("Test butonu")
-         ),
-        ),
-      ),
+      home: const LoginScreen(),
     );
   }
 }
