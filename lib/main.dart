@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:ikili_app/core/theme/app_theme.dart';
 import 'package:ikili_app/firebase_options.dart';
 import 'package:ikili_app/presentation/screens/login/login_screen.dart';
+import 'package:ikili_app/presentation/viewmodels/auth_view_model.dart';
+import 'package:provider/provider.dart';
 
 
 void main() async {
@@ -18,12 +20,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
-      title: "İkili App",
-      home: const LoginScreen(),
+    return ChangeNotifierProvider(
+      create: (context) => AuthViewModel(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: ThemeMode.system,
+        title: "İkili App",
+        home: const LoginScreen(),
+      ),
     );
   }
 }
