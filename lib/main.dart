@@ -2,8 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ikili_app/core/theme/app_theme.dart';
 import 'package:ikili_app/firebase_options.dart';
-import 'package:ikili_app/presentation/screens/home/home_screen.dart';
-import 'package:ikili_app/presentation/screens/login/login_screen.dart';
+import 'package:ikili_app/presentation/screens/main_navigation/main_navigation_screen.dart';
 import 'package:ikili_app/presentation/viewmodels/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +28,7 @@ class MyApp extends StatelessWidget {
         darkTheme: AppTheme.dark,
         themeMode: ThemeMode.system,
         title: "İkili App",
-        home: const LoginScreen(),
+        home: const MainNavigationScreen(),
       ),
     );
   }
