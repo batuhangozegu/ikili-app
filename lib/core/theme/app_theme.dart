@@ -7,7 +7,7 @@ class AppTheme {
   static ThemeData light = ThemeData(
     brightness: Brightness.light,
     scaffoldBackgroundColor: const Color(0xFFF3F2F2),
-    colorScheme: ColorScheme.light(primary: accent, secondary: accent),
+    colorScheme: ColorScheme.light(primary: accent, secondary: accent, surface: Colors.white),
     textTheme: GoogleFonts.archivoTextTheme(),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -57,7 +57,7 @@ class AppTheme {
   static ThemeData dark = ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: const Color(0xFF1A1918),
-    colorScheme: ColorScheme.dark(primary: accent, secondary: accent),
+    colorScheme: ColorScheme.dark(primary: accent, secondary: accent,surface: const Color(0xFF2A2827),),
     textTheme: GoogleFonts.archivoTextTheme(ThemeData.dark().textTheme),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

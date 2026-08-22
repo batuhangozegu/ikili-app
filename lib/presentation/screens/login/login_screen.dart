@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ikili_app/core/theme/app_theme.dart';
-import 'package:ikili_app/presentation/screens/widgets/auth_mode_toggle.dart';
+import 'package:ikili_app/presentation/screens/login/widgets/auth_mode_toggle.dart';
 import 'package:ikili_app/presentation/viewmodels/auth_view_model.dart';
+import 'package:ikili_app/presentation/widgets/ikili_logo.dart';
 import 'package:ikili_app/presentation/widgets/labeled_text_field.dart';
+import 'package:ikili_app/presentation/widgets/primary_action_button.dart';
+import 'package:ikili_app/presentation/widgets/secondary_action_button.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -41,18 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Text('BIR HESAP, İKİ KİŞİ', style: AppTheme.eyebrow),
                     const SizedBox(height: 5),
-                    RichText(
-                      text: TextSpan(
-                        style: AppTheme.heading,
-                        children: [
-                          const TextSpan(text: 'İkili'),
-                          TextSpan(
-                            text: ".",
-                            style: TextStyle(color: AppTheme.accent),
-                          ),
-                        ],
-                      ),
-                    ),
+                    const IkiliLogo(),
 
                     const SizedBox(height: 8),
 
@@ -110,86 +102,40 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const Spacer(),
 
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: authViewModel.isLoading
-                            ? null
-                            : () async {
-                                setState(() => _localError = null);
+                    PrimaryActionButton(
+                      title: _isLoginMode ? 'Giriş Yap' : 'Hesap Oluştur',
+                      isLoading: authViewModel.isLoading,
+                      onPressed: () async {
+                        setState(() => _localError = null);
 
-                                if (_isLoginMode) {
-                                  await context.read<AuthViewModel>().signIn(
-                                    _emailController.text,
-                                    _passwordController.text,
-                                  );
-                                } else {
-                                  if (_passwordController.text !=
-                                      _confirmPasswordController.text) {
-                                    setState(() {
-                                      _localError = 'Şifreler eşleşmiyor';
-                                    });
-                                    return;
-                                  }
-                                  await context.read<AuthViewModel>().signUp(
-                                    _emailController.text,
-                                    _passwordController.text,
-                                  );
-                                }
-                              },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 16,
-                          ),
-                        ),
-                        child: authViewModel.isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    _isLoginMode
-                                        ? 'Giriş Yap'
-                                        : 'Hesap Oluştur',
-                                  ),
-                                  const Icon(Icons.arrow_forward),
-                                ],
-                              ),
-                      ),
+                        if (_isLoginMode) {
+                          await context.read<AuthViewModel>().signIn(
+                            _emailController.text,
+                            _passwordController.text,
+                          );
+                        } else {
+                          if (_passwordController.text !=
+                              _confirmPasswordController.text) {
+                            setState(() {
+                              _localError = 'Şifreler eşleşmiyor';
+                            });
+                            return;
+                          }
+                          await context.read<AuthViewModel>().signUp(
+                            _emailController.text,
+                            _passwordController.text,
+                          );
+                        }
+                      },
                     ),
 
                     const SizedBox(height: 12),
 
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: () async {
-                          await context
-                              .read<AuthViewModel>()
-                              .signInAnonymously();
-                        },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 16,
-                          ),
-                          side: const BorderSide(color: AppTheme.accent),
-                          foregroundColor: AppTheme.accent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: const Text('Misafir Olarak Devam Et'),
-                      ),
+                    SecondaryActionButton(
+                      label: 'Misafir Olarak Devam Et',
+                      onPressed: () async {
+                        await context.read<AuthViewModel>().signInAnonymously();
+                      },
                     ),
                   ],
                 ), // Column
