@@ -11,8 +11,11 @@ class IkiliLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
+    // RichText, tema/DefaultTextStyle rengini miras almaz; bu yüzden
+    // açık temada "İkili" yazısı okunaksız kalıyordu. Text.rich kullanarak
+    // ortam metin rengini (açık/koyu temaya göre) doğru şekilde alıyoruz.
+    return Text.rich(
+      TextSpan(
         style: style ?? AppTheme.heading,
         children: [
           const TextSpan(text: 'İkili'),

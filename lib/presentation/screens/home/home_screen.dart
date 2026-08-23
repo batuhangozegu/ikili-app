@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:ikili_app/core/theme/app_theme.dart';
+import 'package:ikili_app/presentation/screens/waiting_room/waiting_room_screen.dart';
+import 'package:ikili_app/presentation/viewmodels/auth_view_model.dart';
+import 'package:ikili_app/presentation/viewmodels/room_view_model.dart';
 import 'package:ikili_app/presentation/widgets/ikili_logo.dart';
 import 'package:ikili_app/presentation/widgets/primary_action_button.dart';
 import 'package:ikili_app/presentation/widgets/room_code_input.dart';
 import 'package:ikili_app/presentation/widgets/secondary_action_button.dart';
 import 'package:ikili_app/presentation/widgets/stat_card.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,8 +26,43 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  Future<void> _createRoom() async {
+    final authViewModel = context.read<AuthViewModel>();
+    final roomViewModel = context.read<RoomViewModel>();
+
+    final userId = authViewModel.currentUser?.uid;
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Oda oluşturmak için giriş yapmalısınız')),
+      );
+      return;
+    }
+
+    await roomViewModel.createRoom(userId);
+    if (!context.mounted) return;
+
+    if (roomViewModel.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(roomViewModel.errorMessage!)),
+      );
+      return;
+    }
+
+    if (roomViewModel.createdRoomId != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              WaitingRoomScreen(roomId: roomViewModel.createdRoomId!),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isCreatingRoom = context.watch<RoomViewModel>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -64,7 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 PrimaryActionButton(
                   title: 'Oda oluştur',
                   subtitle: 'Sen soruyorsun',
-                  onPressed: () {},
+                  isLoading: isCreatingRoom,
+                  onPressed: _createRoom,
                 ),
 
                 const SizedBox(height: 32),
@@ -81,7 +121,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 12),
 
                 // 7. "Odaya Katıl" butonu
-                SecondaryActionButton(label: 'Odaya Katıl', onPressed: () {}),
+                // TODO: RoomRepository'de joinRoom(code, userId) henüz yok.
+                // Eklenene kadar bu buton oda oluşturmuyor/katılmıyor.
+                SecondaryActionButton(
+                  label: 'Odaya Katıl',
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Kod ile katılma yakında')),
+                    );
+                  },
+                ),
               ],
             ),
           ),

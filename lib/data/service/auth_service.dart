@@ -3,7 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  Future<void> signOut() => _auth.signOut();
+
   Future<User?> signUp(String email, String password) async {
     try {
       final credential = await _auth.createUserWithEmailAndPassword(
@@ -44,7 +48,7 @@ class AuthService {
     try{
     final signInAnonymouslyCredential = await _auth.signInAnonymously();
     return signInAnonymouslyCredential.user;
-    }on FirebaseAuthException catch(e){
+    }on FirebaseAuthException {
       throw "Giriş sırasında bir hata oluştu";
     }
   }
