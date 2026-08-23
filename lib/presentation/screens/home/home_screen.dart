@@ -26,15 +26,17 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   Future<void> _createRoom() async {
     final authViewModel = context.read<AuthViewModel>();
     final roomViewModel = context.read<RoomViewModel>();
 
     final userId = authViewModel.currentUser?.uid;
     if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Oda oluşturmak için giriş yapmalısınız')),
-      );
+      _showSnack('Oda oluşturmak için giriş yapmalısınız');
       return;
     }
 
@@ -42,9 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!context.mounted) return;
 
     if (roomViewModel.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(roomViewModel.errorMessage!)),
-      );
+      _showSnack(roomViewModel.errorMessage!);
       return;
     }
 
@@ -125,11 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Eklenene kadar bu buton oda oluşturmuyor/katılmıyor.
                 SecondaryActionButton(
                   label: 'Odaya Katıl',
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Kod ile katılma yakında')),
-                    );
-                  },
+                  onPressed: () => _showSnack('Kod ile katılma yakında'),
                 ),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ikili_app/presentation/widgets/button_loading_indicator.dart';
 
 /// Login ve Home ekranlarında tekrar eden, tam genişlikte, accent renkli
 /// birincil aksiyon butonu. Tek satır başlık ile (Giriş Yap / Hesap Oluştur)
@@ -29,14 +30,7 @@ class PrimaryActionButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
         child: isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
+            ? const ButtonLoadingIndicator(color: Colors.white)
             : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

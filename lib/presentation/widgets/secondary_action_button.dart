@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ikili_app/core/theme/app_theme.dart';
+import 'package:ikili_app/presentation/widgets/button_loading_indicator.dart';
 
 /// Login ve Home ekranlarında tekrar eden, tam genişlikte, accent renkli
 /// kenarlıklı ikincil aksiyon butonu (ör. "Misafir Olarak Devam Et",
@@ -29,14 +30,7 @@ class SecondaryActionButton extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
         child: isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  color: AppTheme.accent,
-                  strokeWidth: 2,
-                ),
-              )
+            ? const ButtonLoadingIndicator(color: AppTheme.accent)
             : Text(label),
       ),
     );

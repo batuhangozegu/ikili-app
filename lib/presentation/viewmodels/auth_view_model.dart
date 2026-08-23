@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:ikili_app/data/service/auth_service.dart';
+import 'package:ikili_app/presentation/viewmodels/async_view_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthViewModel extends ChangeNotifier {
+class AuthViewModel extends AsyncViewModel {
 
   final AuthService _authService = AuthService();
 
@@ -22,12 +22,6 @@ class AuthViewModel extends ChangeNotifier {
   bool _isInitializing = true;
   bool get isInitializing => _isInitializing;
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
-
   AuthViewModel() {
     _authStateSub = _authService.authStateChanges.listen((user) {
       _currentUser = user;
@@ -44,52 +38,18 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<void> signOut() => _authService.signOut();
 
-  Future<void> signUp(String email,String password) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try{
-      _currentUser = await _authService.signUp(email, password);
-    }catch (e) {
-      _errorMessage = e.toString();
-    }
-
-    _isLoading = false;
-    notifyListeners();
+  Future<void> signUp(String email, String password) async {
+    final user = await runAsync(() => _authService.signUp(email, password));
+    if (user != null) _currentUser = user;
   }
 
-  Future<void> signIn(String email,String password) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      _currentUser = await _authService.signIn(email, password);
-    }catch(e) {
-      _errorMessage = e.toString();
-    }
-
-    _isLoading = false;
-    notifyListeners();
+  Future<void> signIn(String email, String password) async {
+    final user = await runAsync(() => _authService.signIn(email, password));
+    if (user != null) _currentUser = user;
   }
 
   Future<void> signInAnonymously() async {
-
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try{
-      _currentUser = await _authService.signInAnonymously();
-    }catch(e){
-      _errorMessage = e.toString();
-    }
-
-    _isLoading = false;
-    notifyListeners();
-
+    final user = await runAsync(() => _authService.signInAnonymously());
+    if (user != null) _currentUser = user;
   }
-
-
 }
