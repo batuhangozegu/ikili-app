@@ -1,4 +1,4 @@
-enum RoomStatus { waiting, active, finished }
+enum RoomStatus { waiting, active, finished, cancelled }
 
 class Room {
   final String id;

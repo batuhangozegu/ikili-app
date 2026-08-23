@@ -133,6 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     SecondaryActionButton(
                       label: 'Misafir Olarak Devam Et',
+                      isLoading: authViewModel.isLoading,
                       onPressed: () async {
                         await context.read<AuthViewModel>().signInAnonymously();
                       },
