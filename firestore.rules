@@ -1,0 +1,51 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      // Okuma: sadece giriş yapmış kullanıcılar (rakip ismini göstermek için gerekli)
+      allow read: if request.auth != null;
+
+      // Oluşturma/güncelleme: sadece kendi profilini yazan kullanıcı
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+
+      allow delete: if false;
+    }
+
+    match /rooms/{roomId} {
+      // Okuma: sadece giriş yapmış kullanıcılar (misafir dahil, auth != null yeterli)
+      allow read: if request.auth != null;
+
+      // Oluşturma: sadece kendi UID'sini creatorId olarak yazan kullanıcı
+      allow create: if request.auth != null
+                    && request.resource.data.creatorId == request.auth.uid;
+
+      // Güncelleme: oda sahibi, katılan kişi, ya da opponentId hâlâ boşken
+      // katılmak isteyen herkes (joinRoom akışı budur)
+      allow update: if request.auth != null
+                    && (resource.data.creatorId == request.auth.uid
+                        || resource.data.opponentId == request.auth.uid
+                        || resource.data.opponentId == null);
+
+      // Silme genel olarak kapalı
+      allow delete: if false;
+
+      match /questions/{questionId} {
+        allow read: if request.auth != null;
+
+        // Ekleme: sadece kendi UID'sini createdBy olarak yazan kullanıcı
+        allow create: if request.auth != null
+                      && request.resource.data.createdBy == request.auth.uid;
+
+        // Silme: sadece kendi eklediği soruyu silebilir
+        allow delete: if request.auth != null
+                      && resource.data.createdBy == request.auth.uid;
+
+        // Güncelleme istenmedi, kapalı tutuyoruz
+        allow update: if false;
+      }
+    }
+  }
+}

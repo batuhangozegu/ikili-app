@@ -46,17 +46,82 @@ class RoomRepository {
       );
     }
 
-    /// Kullanıcı hâlâ rakip beklerken (opponentId boşken) odadan ayrılırsa
-    /// (uygulamayı kapatma, geri gitme) odayı 'cancelled' yapar; böylece
-    /// Firestore'da sahipsiz "waiting" odalar birikmez. Rakip zaten katıldıysa
-    /// çağrılmamalı.
     Future<void> closeRoom(String roomId) async {
       try {
         await _roomsRef.doc(roomId).update({'status': RoomStatus.cancelled.name});
       } catch (_) {
-        // Ekran kapanırken/arka planda çağrıldığı için başarısız olursa
-        // (ör. doküman zaten silinmiş, bağlantı yok) sessizce yut.
       }
+    }
+
+    Future<void> startRound(String roomId) async {
+      await _roomsRef.doc(roomId).update({'roundStarted': true});
+    }
+
+    Future<void> finishRoom(
+      String roomId, {
+      required int score,
+      required int totalQuestions,
+      required List<Map<String, dynamic>> answers,
+    }) async {
+      await _roomsRef.doc(roomId).update({
+        'status': RoomStatus.finished.name,
+        'score': score,
+        'totalQuestions': totalQuestions,
+        'answers': answers,
+        'finishedAt': DateTime.now().toIso8601String(),
+      });
+    }
+
+    /// Kullanıcının (oluşturan ya da katılan olarak) yer aldığı, bitmiş
+    /// turları döner. Sıralama Firestore tarafında değil, client'ta yapılır;
+    /// böylece composite index gerektirmez.
+    Stream<List<Room>> watchFinishedRooms(String userId) {
+      return _roomsRef
+          .where(
+            Filter.or(
+              Filter('creatorId', isEqualTo: userId),
+              Filter('opponentId', isEqualTo: userId),
+            ),
+          )
+          .where('status', isEqualTo: RoomStatus.finished.name)
+          .snapshots()
+          .map((snapshot) {
+            final rooms = snapshot.docs
+                .map((doc) =>
+                    Room.fromMap(doc.id, doc.data() as Map<String, dynamic>))
+                .toList();
+            rooms.sort((a, b) {
+              final aDate = a.finishedAt ?? a.createdAt;
+              final bDate = b.finishedAt ?? b.createdAt;
+              return bDate.compareTo(aDate);
+            });
+            return rooms;
+          });
+    }
+
+    Future<Room?> joinRoom(String code, String opponentId) async {
+      final query = await _roomsRef
+            .where('code', isEqualTo: code)
+            .where('status', isEqualTo: RoomStatus.waiting.name)
+            .limit(1)
+            .get();
+
+            if(query.docs.isEmpty){
+              throw 'Böyle bir oda yok ya da süresi doldu.';
+            }
+
+            final doc = query.docs.first;
+
+            await doc.reference.update({
+              'opponentId': opponentId,
+              'status' : RoomStatus.active.name,
+            });
+
+            return Room.fromMap(doc.id, {
+              ...doc.data() as Map<String, dynamic>,
+              'opponentId': opponentId,
+              'status': RoomStatus.active.name,
+            });
     }
 
 }
